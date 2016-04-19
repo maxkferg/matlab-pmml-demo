@@ -3,7 +3,7 @@ Simple application of MATLAB-PMML package for the prediction of energy consumpti
 
 ## About
 * Trains a Gaussian Process Regression Model to predict the energy consumption of a milling machine
-* Saves the trained models to PMML using the (MATLAB PMML Package)[https://github.com/maxkferg/matlab-pmml]
+* Saves the trained models to PMML using the [MATLAB PMML Package](https://github.com/maxkferg/matlab-pmml)
 * Makes energy predictions using the PMML model files
 
 ## Usage
