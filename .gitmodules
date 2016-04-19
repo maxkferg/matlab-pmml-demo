@@ -1,0 +1,3 @@
+[submodule "lib/matlab-pmml"]
+	path = lib/matlab-pmml
+	url = https://github.com/maxkferg/matlab-pmml
