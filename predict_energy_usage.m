@@ -1,8 +1,11 @@
 % GP Prediction from PMML file
-% Load a GP model from the models folder an then use this model to 
-% predict the energy consumption of a certain cut
+% Load GP models from the models folder an then use the model to predict
+% the energy consumption of a certain cut
+%
+% Written by Jinkyoo Park, 2015
+% Modified by Max Ferguson, 2016
 
-%prediction part
+%% Blind Test Acurate Predictions
 clear cut_method cut_direction type_operation label ID input E_predict S_predict Y_predict L_blind Y_blind X_blind
 addpath(genpath('lib'));
 load('data/blind_test_accurate.mat')
@@ -25,7 +28,7 @@ for i=1:length(E_blind)
 end
 
 
-% extract fetures
+% Extract features
 energy = cell2mat(D(:,9)); %answer
 duration = cell2mat(D(:,10)); %duration
 feed = cell2mat(D(:,11)); %duration of operation
@@ -50,9 +53,8 @@ for i=1:length(ratio_cut)
     end
 end
 
-%cut_method=zeros(length(y),1);
-for i=1:length(feed)
 
+for i=1:length(feed)
     if strcmp(D{i,24},'Conventional')
         cut_method(i,1) = 1;    
     elseif strcmp(D{i,24},'Climb')
@@ -61,13 +63,11 @@ for i=1:length(feed)
         cut_method(i,1)=3;
     else
         cut_method(i,1)=0;
-    end
-        
+    end       
 end
 
-%cut_direction=zeros(length(y),1);
-for i=1:length(feed)
 
+for i=1:length(feed)
     if abs(cell2mat(D(i,19)))>0 & abs(cell2mat(D(i,20)))==0
         cut_direction(i,1) = 1;     
     elseif abs(cell2mat(D(i,19)))==0 & abs(cell2mat(D(i,20)))>0
@@ -79,7 +79,8 @@ for i=1:length(feed)
     end 
 end
 
-%opeartion 
+
+% Operation 
 for i=1:length(feed)
                  
     if strcmp(D{i,33},'Face Milling')
@@ -99,9 +100,9 @@ for i=1:length(feed)
     end    
 end
 
-%label
-for i=1:length(feed)
 
+% Label
+for i=1:length(feed)
     if strcmp(D{i,30},'Cut with Feed')
         label(i,1) = 1;
     elseif strcmp(D{i,30},'Plunge with feed')
@@ -124,9 +125,8 @@ for i=1:length(feed)
 end
 
 
-for i=1:length(feed)
-    
-    % cut with feed
+for i=1:length(feed)  
+    % Cut with feed
     if (label(i) == 1)
         if (type_operation(i) == 1 ) %face milling
             ID(i,1) = 1;
@@ -164,23 +164,23 @@ end
     
   
 input= [feed,...,
-     spindle,...,
-     depth_cut,...,
-     cut_direction,...,
-     cut_method,...,
-     ratio_cut,...,
-     length_cut_X,...,
-     length_cut_Y,...,
-     length_cut_Z,...,
-     length_cut_XY,...,
-     length_cut_XYZ,...,
-     ID,...,
-     duration];
-output =energy;
-density=energy./length_cut_XYZ;
+        spindle,...,
+        depth_cut,...,
+        cut_direction,...,
+        cut_method,...,
+        ratio_cut,...,
+        length_cut_X,...,
+        length_cut_Y,...,
+        length_cut_Z,...,
+        length_cut_XY,...,
+        length_cut_XYZ,...,
+        ID,...,
+        duration];
+output = energy;
+density = energy./length_cut_XYZ;
 
 
-%total data set
+% Total data set
 X_blind = input;
 ID_blind = input(:,12);
 E_blind = energy;
@@ -195,7 +195,7 @@ Y_blind = E_blind./L_blind;
 T_blind = input(:,13);
 
 
-% %clean up data
+% Clean up data
 clean_up_index = find(Y_blind > 0 & Y_blind < inf);
 X_blind = X_blind(clean_up_index,:);
 ID_blind = ID_blind(clean_up_index);
@@ -203,8 +203,6 @@ L_blind = L_blind(clean_up_index);
 E_blind = E_blind(clean_up_index);
 Y_blind = Y_blind(clean_up_index);
 T_blind = T_blind(clean_up_index);
-
-
 
 
 
@@ -263,23 +261,12 @@ Y_predict_1 = Y_predict;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-%prediction part
+%% Blind Test Intermediate Predictions
 clear cut_method cut_direction type_operation label ID input E_predict S_predict Y_predict L_blind Y_blind X_blind
 load('data/blind_test_intermediate.mat')
 D = [Data];
 
-%extract fetures
+% Extract fetures
 energy = cell2mat(D(:,9)); %answer
 duration = cell2mat(D(:,10)); %duration
 feed = cell2mat(D(:,11)); %duration of operation
@@ -304,9 +291,7 @@ for i=1:length(ratio_cut)
     end
 end
 
-%cut_method=zeros(length(y),1);
 for i=1:length(feed)
-
     if strcmp(D{i,24},'Conventional')
         cut_method(i,1) = 1;    
     elseif strcmp(D{i,24},'Climb')
@@ -319,9 +304,7 @@ for i=1:length(feed)
         
 end
 
-%cut_direction=zeros(length(y),1);
 for i=1:length(feed)
-
     if abs(cell2mat(D(i,19)))>0 & abs(cell2mat(D(i,20)))==0
         cut_direction(i,1) = 1;     
     elseif abs(cell2mat(D(i,19)))==0 & abs(cell2mat(D(i,20)))>0
@@ -333,7 +316,7 @@ for i=1:length(feed)
     end 
 end
 
-%opeartion 
+% Operation 
 for i=1:length(feed)
                  
     if strcmp(D{i,33},'Face Milling')
@@ -353,9 +336,8 @@ for i=1:length(feed)
     end    
 end
 
-%label
+% Label
 for i=1:length(feed)
-
     if strcmp(D{i,30},'Cut with Feed')
         label(i,1) = 1;
     elseif strcmp(D{i,30},'Plunge with feed')
@@ -378,8 +360,7 @@ for i=1:length(feed)
 end
 
 
-for i=1:length(feed)
-    
+for i=1:length(feed)  
     % cut with feed
     if (label(i) == 1)
         if (type_operation(i) == 1 ) %face milling
@@ -418,23 +399,23 @@ end
     
   
 input= [feed,...,
-     spindle,...,
-     depth_cut,...,
-     cut_direction,...,
-     cut_method,...,
-     ratio_cut,...,
-     length_cut_X,...,
-     length_cut_Y,...,
-     length_cut_Z,...,
-     length_cut_XY,...,
-     length_cut_XYZ,...,
-     ID,...,
-     duration];
-output =energy;
-density=energy./length_cut_XYZ;
+        spindle,...,
+        depth_cut,...,
+        cut_direction,...,
+        cut_method,...,
+        ratio_cut,...,
+        length_cut_X,...,
+        length_cut_Y,...,
+        length_cut_Z,...,
+        length_cut_XY,...,
+        length_cut_XYZ,...,
+        ID,...,
+        duration];
+output = energy;
+density = energy./length_cut_XYZ;
 
 
-%total data set
+% Total data set
 X_blind = input;
 ID_blind = input(:,12);
 E_blind = energy;
@@ -449,7 +430,7 @@ Y_blind = E_blind./L_blind;
 T_blind = input(:,13);
 
 
-% %clean up data
+% Clean up data
 clean_up_index = find(Y_blind > 0 & Y_blind < inf);
 X_blind = X_blind(clean_up_index,:);
 ID_blind = ID_blind(clean_up_index);
@@ -457,9 +438,6 @@ L_blind = L_blind(clean_up_index);
 E_blind = E_blind(clean_up_index);
 Y_blind = Y_blind(clean_up_index);
 T_blind = T_blind(clean_up_index);
-
-
-
 
 
 for i=1:length(E_blind)
@@ -511,24 +489,12 @@ Y_predict_2 = Y_predict;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-%prediction part
+%% Blind Test Bad Predictions
 clear cut_method cut_direction type_operation label ID input E_predict S_predict Y_predict L_blind Y_blind X_blind
 load('data/blind_test_bad.mat')
 D = [Data];
 
-%extract fetures
+% Extract fetures
 energy = cell2mat(D(:,9)); %answer
 duration = cell2mat(D(:,10)); %duration
 feed = cell2mat(D(:,11)); %duration of operation
@@ -553,7 +519,7 @@ for i=1:length(ratio_cut)
     end
 end
 
-%cut_method=zeros(length(y),1);
+
 for i=1:length(feed)
 
     if strcmp(D{i,24},'Conventional')
@@ -568,7 +534,6 @@ for i=1:length(feed)
         
 end
 
-%cut_direction=zeros(length(y),1);
 for i=1:length(feed)
 
     if abs(cell2mat(D(i,19)))>0 & abs(cell2mat(D(i,20)))==0
@@ -582,7 +547,7 @@ for i=1:length(feed)
     end 
 end
 
-%opeartion 
+% Operation 
 for i=1:length(feed)
                  
     if strcmp(D{i,33},'Face Milling')
@@ -602,7 +567,7 @@ for i=1:length(feed)
     end    
 end
 
-%label
+% Label
 for i=1:length(feed)
 
     if strcmp(D{i,30},'Cut with Feed')
@@ -627,8 +592,7 @@ for i=1:length(feed)
 end
 
 
-for i=1:length(feed)
-    
+for i=1:length(feed)  
     % cut with feed
     if (label(i) == 1)
         if (type_operation(i) == 1 ) %face milling
@@ -667,23 +631,23 @@ end
     
   
 input= [feed,...,
-     spindle,...,
-     depth_cut,...,
-     cut_direction,...,
-     cut_method,...,
-     ratio_cut,...,
-     length_cut_X,...,
-     length_cut_Y,...,
-     length_cut_Z,...,
-     length_cut_XY,...,
-     length_cut_XYZ,...,
-     ID,...,
-     duration];
-output =energy;
-density=energy./length_cut_XYZ;
+        spindle,...,
+        depth_cut,...,
+        cut_direction,...,
+        cut_method,...,
+        ratio_cut,...,
+        length_cut_X,...,
+        length_cut_Y,...,
+        length_cut_Z,...,
+        length_cut_XY,...,
+        length_cut_XYZ,...,
+        ID,...,
+        duration];
+output = energy;
+density = energy./length_cut_XYZ;
 
 
-%total data set
+% Total data set
 X_blind = input;
 ID_blind = input(:,12);
 E_blind = energy;
@@ -698,7 +662,7 @@ Y_blind = E_blind./L_blind;
 T_blind = input(:,13);
 
 
-% %clean up data
+% Clean up data
 clean_up_index = find(Y_blind > 0 & Y_blind < inf);
 X_blind = X_blind(clean_up_index,:);
 ID_blind = ID_blind(clean_up_index);
@@ -706,9 +670,6 @@ L_blind = L_blind(clean_up_index);
 E_blind = E_blind(clean_up_index);
 Y_blind = Y_blind(clean_up_index);
 T_blind = T_blind(clean_up_index);
-
-
-
 
 
 for i=1:length(E_blind)
@@ -742,7 +703,6 @@ RTE_density = (sum(Y_predict.*L_blind)-sum(E_blind))/sum(E_blind);
 
 display([number,duration,RAE_density*100,predicted_energy/1000,measured_energy/1000,standard,RTE_density*100])
 
-
 Y_blind_3 = Y_blind;
 E_blind_3 = E_blind;
 L_blind_3 = L_blind;
@@ -753,7 +713,7 @@ Y_predict_3 = Y_predict;
 
 
 
-
+%% Creating figures and plots
 figure(1)
 hold
 stairs(E_predict_1,'b')
